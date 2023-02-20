@@ -1,0 +1,43 @@
+---
+title: "Econ 108-03"
+output: html_document
+date: '2022-10-23'
+---
+
+Spam
+1. Ran and understood.
+2.
+email <- read.csv("spam.csv")
+spamtrain <- glm(spam ~ ., data=email[-leaveout,], family='binomial')
+z <- coef(spamtrain)
+exp(z["char_dollar"])
+exp(z["word_george"])
+3. 
+b <- coef(spammy)
+exp(b["word_george"])
+4.
+leaveout <- sample(1:nrow(email), 1000)
+spamtrain <- glm(spam ~ ., data=email[-leaveout,], family='binomial')
+spamleave <- glm(spam ~ ., data=email[leaveout,], family='binomial')
+summary(spamleave)
+5.
+email[,-which((names(email) %in% c("word_george","char_dollar")))]
+exp(b["word_make"]) + exp(b["word_address"]) + exp(b["word_all"]) + exp(b["word_3d"]) + exp(b["word_our"]) + exp(b["word_over"]) + exp(b["word_remove"]) + exp(b["word_internet"]) + exp(b["word_people"]) + exp(b["word_report"]) + exp(b["word_addresses"]) + exp(b["word_free"]) + exp(b["word_order"]) + exp(b["word_mail"]) + exp(b["word_receive"]) + exp(b["word_will"]) + exp(b["word_business"]) + exp(b["word_email"]) + exp(b["word_you"]) + exp(b["word_credit"]) + exp(b["word_your"]) + exp(b["word_font"]) + exp(b["word_000"]) + exp(b["word_money"]) + exp(b["word_hp"]) + exp(b["word_hpl"]) + exp(b["word_650"]) + exp(b["word_lab"]) + exp(b["word_labs"]) + exp(b["word_telnet"]) + exp(b["word_857"]) + exp(b["word_data"]) + exp(b["word_415"]) + exp(b["word_85"]) + exp(b["word_technology"]) + exp(b["word_1999"]) + exp(b["word_parts"]) + exp(b["word_pm"]) + exp(b["word_direct"]) + exp(b["word_cs"]) + exp(b["word_meeting"]) + exp(b["word_original"]) + exp(b["word_project"]) + exp(b["word_re"]) + exp(b["word_edu"]) + exp(b["word_table"]) + exp(b["word_conference"]) + exp(b["char_semicolon"]) + exp(b["char_leftbrac"]) + exp(b["char_leftsquarebrac"]) + exp(b["char_exclaim"]) + exp(b["char_pound"])
+
+OJ
+1.
+oj <- read.csv("oj.csv") 
+glm(formula = log(sales) ~ log(price) + brand, data = oj)
+2.
+reg = glm(log(sales) ~ log(price) + brand, data=oj)
+plot(residuals(reg) ~ log(price), data=oj, col=brandcol[oj$brand])
+3.
+plot(residuals(reg) ~ brand, data=oj, col=brandcol)
+4.
+library(AER)
+summary(reg)
+bvar <- vcovHC(reg)
+round(bvar, 1)
+sqrt(bvar["log(price)","log(price)"])
+sqrt(bvar["brandminute.maid","brandminute.maid"])
+sqrt(bvar["brandtropicana","brandtropicana"])

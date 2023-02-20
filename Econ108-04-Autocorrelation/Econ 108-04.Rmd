@@ -1,0 +1,55 @@
+---
+title: "econ 108 04"
+output: html_document
+date: '2022-10-28'
+---
+
+1)
+a) done
+b)
+nyse5 <- read.csv("nyse5.csv")
+plot(nyse5$price, type="l", main="New York Stock Exchange over time")
+c)
+acf(nyse5$price)
+d)
+n <- nrow(nyse5)
+summary(ARnyse5 <- glm(nyse5[2:n,]~nyse5[1:(n-1),]))
+e)
+returns <- ((nyse5[2:n,]-nyse5[1:n-1,])/nyse5[1:n-1,])
+summary(glm(returns[2:(n-1)] ~ returns[1:(n-2)]))
+f)
+plot(returns, type="l", main="New York Stock Exchange returns over time")
+acf(returns)
+g)
+summary(ARreturns <- glm(returns[2:(n-1)] ~ returns[1:(n-2)]))
+h)
+library(AER)
+summary(ARreturns)
+bvar <- vcovHC(ARreturns)
+round(bvar, 1)
+sqrt(bvar["returns[1:(n - 2)]", "returns[1:(n - 2)]"])
+2)
+a)
+ezanders5 <- read.csv("ezanders5.csv")
+b)
+t <- ezanders5$t
+unemployment <- ezanders5$unemployment
+plot(t, unemployment,  type="l", xlab="time", ylab="unemployment claims", main="unemployment claims over time")
+plot(t, log(unemployment),  type="l", xlab="time", ylab="log unemployment claims", main="log unemployment claims over time", col="green")
+c)
+reg <- glm(log(t) ∼log(unemployment), data=ezanders5)
+lines(t, reg$fit,  type="l", col="red")
+d)
+plot(residuals(reg) ~ log(t), data=ezanders5)
+acf(reg$residuals)
+e)
+lag <- head(log(unemployment), -1)
+unemployment <- unemployment[-1]
+t <- t[-1]
+summary(regAR <- glm(log(unemployment) ~t+lag))
+f)
+acf(regAR$residuals)
+g)
+reg1 <- glm(log(t) ∼log(unemployment) + ez, data=ezanders5)
+plot(t, reg1$fit,  type="l", col="red")
+

@@ -1,0 +1,41 @@
+---
+title: "econ 108 02"
+output: html_document
+date: '2022-10-15'
+---
+
+set.seed(888)
+mu0 <- 1
+stddev <- 0.5
+N <- 50000000
+allx <- exp(rnorm(N, mu0, stddev))
+hist(allx, probability=TRUE, breaks=100, main=paste("Population histogram of size", N))
+lines(density(allx), col="red")
+mu <- mean(allx)
+sigma2 <- var(allx)
+stdev <- sd(allx)
+sampleb = sample(allx, 1, replace=TRUE, prob = NULL);
+sort(sampleb)
+
+
+sb <- sd(smallsamp[sample.int(100, replace= TRUE)]);
+eb <- c(eb, sb)
+tvals <- quantile(eb, c(.05, .95))
+tvals
+5% 95%
+
+
+
+
+n <- 50; xstdev <- c(); R <- 100000
+for (r in 1:R) {
+xsample <- allx[sample.int(N, n)]
+xstdev <- c(xstdev, sd(xsample))
+}
+hist(xstdev, probability=TRUE, breaks=100, main=paste("histogram of sample standard deviation of size",
+n))
+lines(density(xstdev), col="red")
+expectedbarx <- mean(xstdev); varofbarx <- var(xstdev)
+
+mean(xstdev)
+sd(xstdev)

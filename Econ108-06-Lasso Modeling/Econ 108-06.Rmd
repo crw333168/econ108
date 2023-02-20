@@ -1,0 +1,59 @@
+---
+title: "Econ 108-06"
+output: html_document
+date: '2022-11-11'
+---
+
+1)
+library(gamlr)
+library(Matrix)
+a)
+email <- read.csv("spam.csv")
+full <- glm(word_george ~ ., data=email, family=binomial)
+summary(full)
+
+isitspam <- scan("spam.txt", what="character")
+email$word_george <- factor(email$word_george, levels=1:length(isitspam), labels=isitspam)
+email$spam <- factor(email$spam, levels=1:length(isitspam), labels=isitspam)
+totals <- as.vector (tapply(email$word_george,email$spam,sum))
+spampercent <-100*email$spam/totals
+
+xemail <- sparseMatrix(
+i=as.numeric(email$word_george), j=as.numeric(email$spam), x=visitpercent,
+dims=c(nlevels(email$word_george),nlevels(email$spam)),
+dimnames=list(id=levels(email$word_george), site=levels(email$spam)))
+head(xweb[1, xweb[1,]!=0])
+atdmt.com yahoo.com msn.com google.com
+4.0520260 11.8559280 0.2501251 6.5282641
+aol.com questionmarket.com
+0.1500750 1.3506753
+
+B <- coef(full)[-1,]
+B[c(which.min(B), which.max(B))]
+
+pvals <- summary(full)$coef[-1,4]
+fdr_cut <- function(pvals, q=0.1){
+  pvals <- sort(pvals[!is.na(pvals)])
+  N <- length(pvals)
+  k <- rank(pvals, ties.method="min")
+  alpha <- max(pvals[ pvals<= (q*k/(N+1)) ])
+  plot(pvals, log="xy", xlab="order", main=sprintf("FDR of %g",q),
+   ylab="p-value", bty="n", col=c(8,2)[(pvals<=alpha) + 1], pch=20)
+  lines(1:N, q*(1:N)/(N+1))
+  dev.off()
+  return(alpha)
+}
+fdr_cut(pvals)
+( signif <- which(pvals <= 0.005297195 ) )
+cut <- glm(word_george ~ ., data=email[,c("word_george", names(signif))], family="binomial")
+summary(cut)
+b)
+
+spender <- gamlr(xweb, log(yspend))
+plot(spender) # nice path plot
+spender$beta[c("mtv.com","zappos.com"),]
+
+c)
+d)
+e)
+f)

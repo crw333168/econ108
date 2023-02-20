@@ -1,0 +1,137 @@
+---
+title: "ECON 108-07"
+output: html_document
+date: '2022-11-18'
+---
+
+1)
+a)
+email <- read.csv("spam.csv")
+
+library(class)
+x <-scale(email[,1:32])
+apply(x,2,sd)
+test <- sample(1:nrow(email), 1150)
+
+b)
+nearest5 <- knn(train=x[-test,], test=x[test,], cl=email$spam[-test], k=5)
+nearest10 <- knn(train=x[-test,], test=x[test,], cl=email$spam[-test], k=10)
+nearest30 <- knn(train=x[-test,], test=x[test,], cl=email$spam[-test], k=30)
+nearest50 <- knn(train=x[-test,], test=x[test,], cl=email$spam[-test], k=50)
+nearest100 <- knn(train=x[-test,], test=x[test,], cl=email$spam[-test], k=100)
+data.frame(email$spam[test],nearest5,nearest10,nearest30,nearest50,nearest100)
+c)
+email$spam[test]
+accuracy <- mean(email$spam[test] == as.integer(levels(nearest5))[nearest5])
+accuracy
+accuracy <- mean(email$spam[test] ==as.integer(levels(nearest10))[nearest10])
+accuracy
+accuracy <- mean(email$spam[test] == as.integer(levels(nearest30))[nearest30])
+accuracy
+accuracy <- mean(email$spam[test] ==
+as.integer(levels(nearest50))[nearest50])
+accuracy
+accuracy <- mean(email$spam[test] ==
+as.integer(levels(nearest100))[nearest100])
+accuracy
+
+d)
+K = 5 is most accurate
+
+2)
+a)
+library(gamlr)
+library(Matrix)
+
+spamx <- sparse.model.matrix( spam ~ .^2, data=naref(email))[,-1]
+Spam <- email$spam
+spamscore <- cv.gamlr(spamx, Spam, family="binomial", verb=TRUE)
+
+#OOS
+test <- sample(1:nrow(email), 2300)
+spamhalf <- gamlr(spamx[-test,], Spam[-test], family="binomial")
+predoos <- predict(spamhalf, spamx[test,], type="response")
+defaultoos <- Spam[test]
+roc(p=predoos, y=defaultoos, bty="n", main="out-of-sample")
+points(x= 1-mean((predoos<.2)[defaultoos==0]), y=mean((predoos>.2)[defaultoos==1]), cex=1.5, pch=20,
+col= "red")
+points(x= 1-mean((predoos<.5)[defaultoos==0]), y=mean((predoos>.5)[defaultoos==1]), cex=1.5, pch=20,
+col="blue")
+
+#In Sample
+pred <- predict(spamscore$gamlr, spamx, type="response")
+pred <- drop(pred) # remove the sparse Matrix formatting
+source("roc.R")
+par(mai=c(.9,.9,.2,.1), mfrow=c(1,1))
+roc(p=pred, y=Spam, bty="n", main="in-sample")
+## our 1/5 and .5 rule cutoffs
+points(x= 1-mean((pred<.2)[Spam==0]), y=mean((pred>.2)[Spam==1]), cex=1.5, pch=20, col="red")
+## a standard ‘max prob’ (p=.5) rule
+points(x= 1-mean((pred<.5)[Spam==0]), y=mean((pred>.5)[Spam==1]), cex=1.5, pch=20, col="blue")
+legend("bottomright",fill=c("red","blue"), legend=c("p=1/5","p=1/2"),bty="n",title="cutoff")
+
+b)
+p = 30/130
+
+c)
+mean( (pred>30/130)[Spam==1] )# sensitivity
+
+mean( (pred<30/130)[Spam==0] )# specificity
+
+#OOS
+test <- sample(1:nrow(email), 2300)
+spamhalf <- gamlr(spamx[-test,], Spam[-test], family="binomial")
+predoos <- predict(spamhalf, spamx[test,], type="response")
+defaultoos <- Spam[test]
+roc(p=predoos, y=defaultoos, bty="n", main="out-of-sample")
+points(x= 1-mean((predoos<.2)[defaultoos==0]), y=mean((predoos>.2)[defaultoos==1]), cex=1.5, pch=20,
+col= "red")
+points(x= 1-mean((predoos<.5)[defaultoos==0]), y=mean((predoos>.5)[defaultoos==1]), cex=1.5, pch=20,
+col="blue")
+points(x= 1-mean((predoos<30/130)[defaultoos==0]), y=mean((predoos>30/130)[defaultoos==1]), cex=1.5, pch=20,
+col="green")
+
+#In Sample
+pred <- predict(spamscore$gamlr, spamx, type="response")
+pred <- drop(pred) # remove the sparse Matrix formatting
+source("roc.R")
+par(mai=c(.9,.9,.2,.1), mfrow=c(1,1))
+roc(p=pred, y=Spam, bty="n", main="in-sample")
+## our 1/5 and .5 rule cutoffs
+points(x= 1-mean((pred<.2)[Spam==0]), y=mean((pred>.2)[Spam==1]), cex=1.5, pch=20, col="red")
+## a standard ‘max prob’ (p=.5) rule
+points(x= 1-mean((pred<.5)[Spam==0]), y=mean((pred>.5)[Spam==1]), cex=1.5, pch=20, col="blue")
+points(x= 1-mean((pred<30/130)[Spam==0]), y=mean((pred>30/130)[Spam==1]), cex=1.5, pch=20, col="green")
+legend("bottomright",fill=c("red","blue", "green"),
+
+d)
+
+mean( (pred>100/130)[Spam==1] )# sensitivity
+
+mean( (pred<100/130)[Spam==0] )# specificity
+
+#OOS
+test <- sample(1:nrow(email), 2300)
+spamhalf <- gamlr(spamx[-test,], Spam[-test], family="binomial")
+predoos <- predict(spamhalf, spamx[test,], type="response")
+defaultoos <- Spam[test]
+roc(p=predoos, y=defaultoos, bty="n", main="out-of-sample")
+points(x= 1-mean((predoos<.2)[defaultoos==0]), y=mean((predoos>.2)[defaultoos==1]), cex=1.5, pch=20,
+col= "red")
+points(x= 1-mean((predoos<.5)[defaultoos==0]), y=mean((predoos>.5)[defaultoos==1]), cex=1.5, pch=20,
+col="blue")
+points(x= 1-mean((predoos<100/130)[defaultoos==0]), y=mean((predoos>100/130)[defaultoos==1]), cex=1.5, pch=20,
+col="green")
+
+#In Sample
+pred <- predict(spamscore$gamlr, spamx, type="response")
+pred <- drop(pred) # remove the sparse Matrix formatting
+source("roc.R")
+par(mai=c(.9,.9,.2,.1), mfrow=c(1,1))
+roc(p=pred, y=Spam, bty="n", main="in-sample")
+## our 1/5 and .5 rule cutoffs
+points(x= 1-mean((pred<.2)[Spam==0]), y=mean((pred>.2)[Spam==1]), cex=1.5, pch=20, col="red")
+## a standard ‘max prob’ (p=.5) rule
+points(x= 1-mean((pred<.5)[Spam==0]), y=mean((pred>.5)[Spam==1]), cex=1.5, pch=20, col="blue")
+points(x= 1-mean((pred<.76)[Spam==0]), y=mean((pred>.76)[Spam==1]), cex=1.5, pch=20, col="green")
+legend("bottomright",fill=c("red","blue", "green")
